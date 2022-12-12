@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+
+{% block codigoindex %}
+{% if request.user.is_superuser %}
+
+<form method="post"> {% csrf_token %}
+    Estas seguro?
+    <input type="submit" value="Eliminar">
+</form>
+
+{% else %}
+
+    <h3>No tienes permisos de administrador para eliminar publicaciones!</h3>
+
+{% endif %}
+
+{% endblock codigoindex %}

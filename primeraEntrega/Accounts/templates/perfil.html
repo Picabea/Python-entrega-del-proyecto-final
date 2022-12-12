@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block codigoindex %}
+
+<h1>Tu perfil:</h1>
+<img width="200" height="200" src="{{perfil.avatar}}" alt="" >    
+<h2> Nombre: {{usuario.username}} </h2>
+<b style="display: block;">Email: {{usuario.email}}</b> 
+<button>
+    <a href="{% url 'Editar Usuario' %}">Cambiar informacion de usuario</a>
+</button>
+<p>{{perfil.descripcion}}</p>
+<i style="display: block;">URL: {{perfil.link}}</i>
+
+<button>
+    <a href="{% url 'Editar Perfil' %}">Subir informacion al perfil</a>
+</button>
+
+{% endblock codigoindex %}

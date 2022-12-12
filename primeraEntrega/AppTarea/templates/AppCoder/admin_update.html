@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+
+{% block codigoindex %}
+<form method="post"> {% csrf_token %}
+
+    {{form.as_p}}
+    {% if mensaje %}
+        <b style="display: block;">{{mensaje}}</b>
+    {% endif %}
+    <input type="submit" value="Enviar">
+</form>
+
+{% endblock codigoindex %}

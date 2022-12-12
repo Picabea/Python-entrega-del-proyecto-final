@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+{% block codigoindex %}
+
+
+
+{% if request.user.is_superuser %}
+    <button>
+        <a href="{% url 'Publicacion Create' %}">Crear publicacion</a>
+    </button>
+{% endif %}
+
+{% if publicaciones %}
+    <h2>Publicaciones:</h2>
+    <p>Filtrar por categoria:</p>
+    {% for publicacion in publicaciones %}
+        <ul>
+            <li>
+                <h3>{{publicacion.titulo}}</h3>
+                <i style="display: block;">{{publicacion.subtitulo}}</i>
+                {% if request.user.is_authenticated %}
+                    <button>
+                        <a href="{% url 'Publicacion Detail' publicacion.id %}">Ver publicacion completa</a>
+                    </button>
+                    {% if request.user.is_superuser %}
+                        <button>
+                            <a href="{% url 'Publicacion Update' publicacion.id %}">Modificar</a>
+                        </button>
+                        
+                        <button>
+                            <a href="{% url 'Publicacion Delete' publicacion.id %}">Eliminar</a>
+                        </button>
+                    {% endif %}
+                {% else %}
+                    <b><i>Debes iniciar sesion para ver en detalle las publicaciones!</i></b>
+                {% endif %}
+            </li>
+        </ul>
+    {% endfor %}
+{% else %}
+    <h2>{{respuesta}}</h2>
+{% endif %}
+{% endblock codigoindex %}

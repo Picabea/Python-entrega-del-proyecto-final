@@ -1,0 +1,9 @@
+{% extends 'index.html' %}
+
+{% block codigoindex %}
+<h1>{{respuesta}}</h1>
+
+<button>
+    <a href="{% url 'Crear Perfil' %}">Subir informacion al perfil</a>
+</button>
+{% endblock codigoindex %}

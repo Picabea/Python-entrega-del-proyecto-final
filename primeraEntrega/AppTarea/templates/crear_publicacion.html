@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+{% block codigoindex %}
+{% if request.user.is_superuser %}
+    <form action="" method="post"> {% csrf_token %}
+
+        <h3>Crear publicacion </h3>
+        <table>
+            {{formulario.media}}
+            {{formulario.as_table}}
+            
+        </table>
+        <b style="display: block;">Para aparecer en su respectiva seccion la categoria debe ser 'perros' o  'gatos'</b>
+        <button type="submit" value="Enviar">Subir publicacion</button>
+        
+    </form>
+{% else %}
+    <h3>No tienes permisos de administrador para crear publicaciones!</h3>
+{% endif %}
+{% endblock codigoindex %}

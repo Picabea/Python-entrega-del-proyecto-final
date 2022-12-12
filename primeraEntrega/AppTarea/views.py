@@ -1,95 +1,102 @@
 from django.shortcuts import render
+from Accounts.models import Perfil
 from .models import *
-from .forms import *
+from .forms import CrearComentario, CrearPublicacion
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+import time 
 # Create your views here.
 
 
-def crear_curso(request):
+def mostrar_inicio(request):
+    mostrar_info = True
+    return render(request, 'index.html', {'info': mostrar_info})
     
-    if request.method == 'POST':
-        
-        formulario = CrearCurso(request.POST)
 
+
+@login_required
+def crear_comentario(request, id):
+    autor = request.user
+
+    if request.method == 'POST':
+        formulario = CrearComentario(request.POST)
         if formulario.is_valid():
             formulario_limpio = formulario.cleaned_data
-
-        curso = Curso(nombre=formulario_limpio['nombre'], comision=formulario_limpio['comision'])
-        curso.save()
-
-        return render(request, 'index.html')
+            comentario = Comentario(autor=autor, cuerpo=formulario_limpio['cuerpo'], publicacion=id)
+            
+            comentario.save()
+            return render(request, 'index.html', {'info': True})
     else:
-        formulario = CrearCurso()
+        formulario = CrearComentario()
+    return render(request, 'crear_comentario.html', {'formulario': formulario})
 
-    return render(request, 'crear_curso.html', {'formulario': formulario})
-
-def buscar_curso(request):
-    
-    if request.GET.get('nombre', False):
-        nombre = request.GET['nombre']
-        cursos = Curso.objects.filter(nombre__icontains=nombre)
-
-        return render(request, "buscar_curso.html", {'cursos': cursos})
+@login_required
+def ver_comentarios(request, id):
+    comentarios = Comentario.objects.filter(publicacion=id)
+    if len(comentarios) > 0:
+        return render(request, "ver_comentarios.html", {'comentarios': comentarios, 'publicacion_id': comentarios[0].publicacion})
     else:
-        respuesta = "No hay datos"
-        
-    return render(request, 'buscar_curso.html', {'respuesta': respuesta})
+        respuesta = "No hay comentarios"
 
-def crear_edificio(request):
-    
+    return render(request, 'ver_comentarios.html', {'respuesta': respuesta})
+
+
+def ver_publicaciones(request, categoria):
+    if categoria == 'perros' or categoria == 'gatos':
+        publicaciones = Publicacion.objects.filter(categoria=categoria)
+    else:
+        publicaciones = Publicacion.objects.all()
+    if len(publicaciones) > 0:
+        return render(request, 'publicacion_list.html', {'publicaciones': publicaciones, 'bienvenida': categoria})
+    else:
+        respuesta = 'No hay publicaciones'
+    return render(request, 'publicacion_list.html', {'respuesta': respuesta, 'bienvenida': categoria})
+
+@login_required
+def crear_publicacion(request):
+    autor = request.user
+
     if request.method == 'POST':
-        
-        formulario1 = CrearEdificio(request.POST)
+        formulario = CrearPublicacion(request.POST)
+        if formulario.is_valid():
+            informacion = formulario.cleaned_data
+            tiempo = time.ctime()
+            publicacion = Publicacion(
+                    titulo = informacion['titulo'],
+                    subtitulo = informacion['subtitulo'],
+                    cuerpo = informacion['cuerpo'],
+                    autor = autor,
+                    fecha = tiempo,
+                    imagen = informacion['imagen'],
+                    categoria = informacion['categoria']
 
-        if formulario1.is_valid():
-            formulario_limpio = formulario1.cleaned_data
-
-        edificio = Edificio(pisos=formulario_limpio['pisos'], facultad=formulario_limpio['facultad'], cantidad_de_aulas=formulario_limpio['cantidad_de_aulas'])
-        edificio.save()
-
-        return render(request, 'index.html')
+            )
+            
+            publicacion.save()
+            return render(request, 'publicacion_list.html', {'publicaciones': Publicacion.objects.all()})
     else:
-        formulario1 = CrearEdificio()
+        formulario = CrearPublicacion()
+    return render(request, 'crear_publicacion.html', {'formulario': formulario})
 
-    return render(request, 'crear_edificio.html', {'formulario1': formulario1})
+def about_us(request):
+    return render(request, 'about.html')
+class PublicacionDetail(LoginRequiredMixin, DetailView):
+    model = Publicacion
+    template_name = 'AppCoder/publicacion_detalle.html'
 
-def buscar_edificio(request):
-    
-    if request.GET.get('facultad', False):
-        facultad = request.GET['facultad']
-        edificios = Edificio.objects.filter(facultad__icontains=facultad)
+class PublicacionUpdate(LoginRequiredMixin, UpdateView):
+    model = Publicacion
+    template_name = 'AppCoder/publicacion_form.html'
+    success_url = '/pages/todos'
+    fields = ['titulo', 'subtitulo', 'cuerpo']    
 
-        return render(request, "buscar_edificio.html", {'edificios': edificios})
-    else:
-        respuesta = "No hay datos"
-        
-    return render(request, 'buscar_edificio.html', {'respuesta': respuesta})
+class PublicacionDeleteView(LoginRequiredMixin, DeleteView):
+    model = Publicacion
+    template_name = 'AppCoder/publicacion_confirm_delete.html'
+    success_url = '/pages/todos'
 
-def crear_aula(request):
-    
-    if request.method == 'POST':
-        
-        formulario2 = CrearAula(request.POST)
-
-        if formulario2.is_valid():
-            formulario_limpio = formulario2.cleaned_data
-
-        aula = Aula(materia=formulario_limpio['materia'], numero=formulario_limpio['numero'], tamaño=formulario_limpio['tamaño'])
-        aula.save()
-
-        return render(request, 'index.html')
-    else:
-        formulario2 = CrearAula()
-
-    return render(request, 'crear_aula.html', {'formulario2': formulario2})
-
-def buscar_aula(request):
-    
-    if request.GET.get('numero', False):
-        numero = request.GET['numero']
-        aulas = Aula.objects.filter(numero__icontains=numero)
-
-        return render(request, "buscar_aula.html", {'aulas': aulas})
-    else:
-        respuesta = "No hay datos"
-        
-    return render(request, 'buscar_aula.html', {'respuesta': respuesta})

@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% block codigoindex %}
+<h2>{{publicacion.titulo}}</h2>
+<i><b>{{publicacion.subtitulo}}</b></i>
+<p>{{publicacion.cuerpo|safe}}</p>
+
+<img width="500" height="500" 
+src="{{publicacion.imagen}}"
+style="display: block;">
+
+<p style="display: block;">Esta publicacion fue creada por {{publicacion.autor}} en {{publicacion.fecha}}</p>
+<button>
+    <a href="{% url 'Publicacion List' publicacion.categoria %}">Volver atras</a>
+</button>
+
+<button>
+    <a href="{% url 'Comentarios List' publicacion.id %}">Ver comentarios</a>
+</button>
+
+{% if request.user.is_authenticated %}
+    <button>
+        <a href="{% url 'Crear Comentario' publicacion.id %}">Comentar</a>
+    </button>
+{% endif %}
+{% endblock codigoindex %}

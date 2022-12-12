@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+{% block codigoindex %}
+<form action="" method="post"> {% csrf_token %}
+
+    <h3>Crear comentario </h3>
+    <table>
+        {{formulario.as_table}}
+    </table>
+    
+    <button type="submit" value="Enviar">Subir comentario</button>
+</form>
+{% endblock codigoindex %}

@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+{% block codigoindex %}
+
+{% if request.user.is_superuser %}
+    <form action="" method="post"> {% csrf_token %}
+        {{form.media}}
+        {{form.as_p}}
+        
+        <input type="submit" value="Enviar">
+        
+    </form>
+    
+{% else %}
+    <p>No tienes permisos de administrador para modificar publicaciones!</p>
+{% endif %}
+{% endblock codigoindex %}
